@@ -3,22 +3,11 @@ import PokemonCard from '../components/PokemonCard'
 import { getPokemonList, getPokemonDetail, getPokemonSpecies } from '../api/pokemonApi'
 
 export default function PokemonList() {
-  // const pokemons = [
-  //   { id: 1, name: '피카추' },
-  //   { id: 2, name: '이상해씨' },
-  //   { id: 3, name: '이상해꽃' },
-  //   { id: 4, name: '파이리' },
-  //   { id: 5, name: '리자드' },
-  //   { id: 6, name: '리자몽' },
-  //   { id: 7, name: '꼬부기' },
-  //   { id: 8, name: '어니부기' },
-  // ]
 
   const { data: pokemons, isLoading, isError, error } = useQuery({
     queryKey: ['pokemons'],
     queryFn: async () => {
       const list = await getPokemonList(100)
-      //console.log(list)
 
       // Promise.all : 여러 비동기 작업을 병렬로 처리하고, 모든 작업이 완료될 때까지 기다림
       return Promise.all(
@@ -28,10 +17,15 @@ export default function PokemonList() {
           const species = await getPokemonSpecies(detail.id);
           const koreanName = species.names.find((n) => n.language.name === "ko")?.name;
 
+          //console.log(detail.types)
+          //console.log(detail.types.map((t) => t.type.name))
+
           return {
             id: detail.id,
             name: koreanName || detail.name,
             image: detail.sprites.other["official-artwork"].front_default,
+            // types 배열에서 타입 이름만 추출하여 새로운 배열을 만들고 반환
+            types: detail.types.map((t) => t.type.name),
           }
         })
       )
